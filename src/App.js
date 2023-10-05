@@ -1,8 +1,10 @@
-import React from "react";
+import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import CreateSpaceForm from './components/CreateSpaceForm';
 
 function App() {
   return (
-    <h1>Hi Nice to meet you</h1>
+    <CreateSpaceForm />
   );
 }
 
