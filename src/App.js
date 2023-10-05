@@ -1,10 +1,12 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CreateSpaceForm from './components/CreateSpaceForm';
+import CreateMeetingForm from './components/CreateMeetingForm';
+import SpaceList from './components/SpaceList';
 
 function App() {
   return (
-    <CreateSpaceForm />
+    // <CreateMeetingForm />
+    <SpaceList />
   );
 }
 
