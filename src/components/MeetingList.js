@@ -2,9 +2,9 @@ import React, { Component, useEffect, useState } from "react";
 import CreateMeetingForm from "./CreateMeetingForm";
 import { findMeetings } from "../services/api";
 import { Card, Col, Row, Button } from "react-bootstrap";
-import styles from "../assets/css/SpaceList.module.css";
+import styles from "../assets/css/MeetingList.module.css";
 
-export default function SpaceList() {
+export default function MeetingList() {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
@@ -16,7 +16,7 @@ export default function SpaceList() {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching spaces", error);
+        console.error("Error fetching meeting", error);
         setLoading(false);
       });
   }, []);
@@ -37,7 +37,7 @@ export default function SpaceList() {
             <CreateMeetingForm /> : 
             <div>
                 <Button className={styles.button} onClick={handleRegister}>Register New Meeting</Button>
-                <Spaces meetings={meetings} />
+                <Meeting meetings={meetings} />
             </div>}
         
       </div>
@@ -45,7 +45,7 @@ export default function SpaceList() {
   );
 }
 
-function Spaces({ meetings }) {
+function Meeting({ meetings }) {
   return (
     <>
       <Row xs={1} md={2} className="g-4">
@@ -59,7 +59,7 @@ function Spaces({ meetings }) {
               <Card.Body>
                 <Card.Title>{meeting.name}</Card.Title>
                 <Card.Text>{meeting.description}</Card.Text>
-                <Button variant="primary">Go Somewhere</Button>
+                <Button variant="primary">View</Button>
               </Card.Body>
             </Card>
           </Col>
