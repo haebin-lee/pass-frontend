@@ -14,3 +14,7 @@ export const createMeeting = (name, description) => {
 export const findMeetings = () => {
     return api.get('/meetings');
 }
+
+export const addAttendees = (meeting_id, data) => {
+  return api.post('/meetings/' + Number(meeting_id) + '/attendees', data);
+}

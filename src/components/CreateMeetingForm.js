@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Button, Form, Row, Col, Table, Container } from "react-bootstrap";
-import { createMeeting } from "../services/api";
+import { Button, Form, Row, Col, Table } from "react-bootstrap";
+import { createMeeting, addAttendees } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
 
 class CreateMeetingForm extends Component {
@@ -10,6 +10,11 @@ class CreateMeetingForm extends Component {
       name: "",
       description: "",
       attendees: [],
+
+      attendeeId: 0,
+      attendeeName: "",
+      attendeeEmail: "",
+      attendeePhone: "",
     };
   }
 
@@ -20,11 +25,16 @@ class CreateMeetingForm extends Component {
   };
 
   handleSubmit = (event) => {
-    const { name, description } = this.state;
-    console.log("submit", name, description);
+    event.preventDefault();
+    const { name, description, attendees } = this.state;
     createMeeting(name, description)
-      .then((response) => {
-        console.log("response", response);
+      .then((res) => {
+        console.log("add meeting", res);
+        console.log(res.data.id, attendees)
+        addAttendees(res.data.id, attendees).then((res2)=> {
+          console.log('add attendees', res2)
+        })
+
       })
       .catch((error) => {
         console.log("handleSubmit error", error);
@@ -32,16 +42,35 @@ class CreateMeetingForm extends Component {
   };
 
   handleAttendeeAdd = (event) => {
-    console.log(event)
+    const { attendeeId, attendeeName, attendeeEmail, attendeePhone } = this.state;
+    if (attendeeName && attendeeEmail && attendeePhone) {
+      const newAttendee = {
+        id: attendeeId,
+        name: attendeeName,
+        email: attendeeEmail,
+        phone: attendeePhone,
+      }
+
+      // Add the new attendee to the attendees array
+      this.setState((prevState) => ({
+        attendees: [...prevState.attendees, newAttendee],
+        attendeeId: attendeeId + 1,
+        attendeeName: '',
+        attendeeEmail: '', 
+        attendeePhone: '',
+      }))
+    }
   }
-  
-  handleAttendeeChange = (event) => {
-    console.log(event.target.value)
-  }
+
+  handleAttendeeChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+  };
 
   render() {
     console.log("rendering");
-    const { name, description, attendees} = this.state;
+    const { name, description, attendees } = this.state;
 
     return (
       <div className={styles.container}>
@@ -91,17 +120,33 @@ class CreateMeetingForm extends Component {
           <Form.Group>
             <Row>
               <Col>
-                <Form.Control placeholder="Name" 
-                  />
+                <Form.Control
+                  name="attendeeName"
+                  placeholder="Name"
+                  value={this.state.attendeeName}
+                  onChange={this.handleAttendeeChange}
+                />
               </Col>
               <Col>
-                <Form.Control placeholder="Email" />
+                <Form.Control
+                  name="attendeeEmail"
+                  placeholder="Email"
+                  value={this.state.attendeeEmail}
+                  onChange={this.handleAttendeeChange}
+                />
               </Col>
               <Col>
-                <Form.Control placeholder="phone" />
+                <Form.Control
+                  name="attendeePhone"
+                  placeholder="phone"
+                  value={this.state.attendeePhone}
+                  onChange={this.handleAttendeeChange}
+                />
               </Col>
               <Col>
-                <Button variant="success">Add</Button>
+                <Button variant="success" onClick={this.handleAttendeeAdd}>
+                  Add
+                </Button>
               </Col>
             </Row>
           </Form.Group>
@@ -118,7 +163,7 @@ function Attendees({ attendees }) {
   return (
     <>
       {attendees.map((attendee) => (
-        <tr>
+        <tr key={attendee.id}>
           <td>{attendee.id}</td>
           <td>{attendee.name}</td>
           <td>{attendee.email}</td>
