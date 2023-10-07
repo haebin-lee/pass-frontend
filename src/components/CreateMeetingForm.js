@@ -25,7 +25,6 @@ class CreateMeetingForm extends Component {
   };
 
   handleSubmit = (event) => {
-    event.preventDefault();
     const { name, description, attendees } = this.state;
     createMeeting(name, description)
       .then((res) => {
