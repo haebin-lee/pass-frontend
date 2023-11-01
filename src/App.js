@@ -5,6 +5,8 @@ import MeetingList from "./components/MeetingList";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Nav from "./components/Nav";
 import Main from "./components/Main";
+import styles from "./assets/css/App.module.css";
+
 
 const router = createBrowserRouter([
   {
@@ -23,11 +25,12 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    // <CreateMeetingForm />
-    // <SpaceList />
     <>
         <Nav />
-        <RouterProvider router={router} />
+        <div>
+          <RouterProvider router={router} />
+        </div>
+        
     </>
   );
 }

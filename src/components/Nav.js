@@ -27,17 +27,6 @@ export default function Nav() {
             Pass!
           </a>
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {/* <form className="d-flex" role="search">
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button className="btn btn-outline-primary" onClick={onClickSearch}>
-                Search
-              </button>
-            </form> */}
           </ul>
           <li className="d-flex">
             <button type="button" className="btn btn-outline-success" onClick={onClickLogin}>

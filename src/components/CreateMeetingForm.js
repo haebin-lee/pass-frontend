@@ -18,7 +18,6 @@ class CreateMeetingForm extends Component {
     };
   }
 
-  // todo: change not to render every time.
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
@@ -73,7 +72,46 @@ class CreateMeetingForm extends Component {
 
     return (
       <div className={styles.container}>
-        <Form>
+        <form>
+          <div className="mb-3">
+            <label htmlFor="exampleName" className="form-label">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={this.handleChange}
+              className="form-control"
+              id="formControlName"
+              placeholder="Enter your meet-up name"
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="exampleDescription" className="form-label">
+              Description
+            </label>
+            <textarea
+              type="textarea"
+              name="description"
+              value={description}
+              onChange={this.handleChange}
+              className="form-control"
+              id="formControlDescription"
+            />
+          </div>
+          <div className="d-grid justify-content-md-end">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={this.handleSubmit}
+            >
+              Save
+            </button>
+          </div>
+        </form>
+
+        {/* <Form>
           <Form.Group className="mb-3" controlId="group_name">
             <Form.Label>Name</Form.Label>
             <Form.Control
@@ -152,7 +190,7 @@ class CreateMeetingForm extends Component {
           <Button variant="primary" type="submit" onClick={this.handleSubmit}>
             Save
           </Button>
-        </Form>
+        </Form> */}
       </div>
     );
   }
