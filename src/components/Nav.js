@@ -23,11 +23,11 @@ export default function Nav() {
           <span className="navbar-toggler-icon" />
         </button>
         <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             Pass!
           </a>
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <form className="d-flex" role="search">
+            {/* <form className="d-flex" role="search">
               <input
                 className="form-control me-2"
                 type="search"
@@ -37,10 +37,10 @@ export default function Nav() {
               <button className="btn btn-outline-primary" onClick={onClickSearch}>
                 Search
               </button>
-            </form>
+            </form> */}
           </ul>
           <li className="d-flex">
-            <button type="button" class="btn btn-outline-success" onClick={onClickLogin}>
+            <button type="button" className="btn btn-outline-success" onClick={onClickLogin}>
               Login
             </button>
           </li>

@@ -1,7 +1,6 @@
 import React, { Component, useEffect, useState } from "react";
 import CreateMeetingForm from "./CreateMeetingForm";
 import { findMeetings } from "../services/api";
-import { Card, Col, Row, Button } from "react-bootstrap";
 import styles from "../assets/css/MeetingList.module.css";
 
 export default function MeetingList() {
@@ -36,7 +35,7 @@ export default function MeetingList() {
         {showRegisterForm ? 
             <CreateMeetingForm /> : 
             <div>
-                <Button className={styles.button} onClick={handleRegister}>Register New Meeting</Button>
+                {/* <Button className={styles.button} onClick={handleRegister}>Register New Meeting</Button> */}
                 <Meeting meetings={meetings} />
             </div>}
         
@@ -48,23 +47,23 @@ export default function MeetingList() {
 function Meeting({ meetings }) {
   return (
     <>
-      <Row xs={1} md={2} className="g-4">
+      <h2 style={{padding: '3px'}}>Upcoming Events</h2>
+      <div className="row row-cols-4 g-5">
         {meetings.map((meeting) => (
-          <Col key={meeting.id}>
-            <Card width="200px">
-              <Card.Img
-                variant="top"
+          <div className="col">
+            <div className="card" style={{ width: "300px", height: "300px" }}>
+              <img
                 src="https://picsum.photos/seed/picsum/300/100"
+                className="card-img-top"
               />
-              <Card.Body>
-                <Card.Title>{meeting.name}</Card.Title>
-                <Card.Text>{meeting.description}</Card.Text>
-                <Button variant="primary">View</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+              <div className="card-body">
+                <h5 className="card-title">{meeting.name}</h5>
+                <p className="card-text">{meeting.description}</p>
+              </div>
+            </div>
+          </div>
         ))}
-      </Row>
+      </div>
     </>
   );
 }
