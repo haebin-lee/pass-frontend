@@ -6,6 +6,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Nav from "./components/Nav";
 import Main from "./components/Main";
 import styles from "./assets/css/App.module.css";
+import MeetingDetail from "./components/MeetingDetail";
+import Validation from "./components/Validation";
 
 
 const router = createBrowserRouter([
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
     path: "/create-space",
     element: <CreateMeetingForm />,
   },
+  {
+    path: '/spaces/:id',
+    element: <MeetingDetail />
+  },
+  {
+    path:'/validation/:qrAddr',
+    element: <Validation />
+  }
 ]);
 
 function App() {

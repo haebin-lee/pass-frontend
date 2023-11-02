@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { Button, Form, Row, Col, Table } from "react-bootstrap";
 import { createMeeting, addAttendees } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
+import {qrGenerator} from './QRCodeGenerator';
 
 class CreateMeetingForm extends Component {
   constructor(props) {
@@ -18,47 +19,79 @@ class CreateMeetingForm extends Component {
     };
   }
 
+  generateQRAddr = async (validationUrl) => {
+    try {
+      const qrDataURL = await qrGenerator(validationUrl);
+      return qrDataURL;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
   };
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
+    event.preventDefault();
     const { name, description, attendees } = this.state;
-    createMeeting(name, description)
-      .then((res) => {
-        console.log("add meeting", res);
-        console.log(res.data.id, attendees)
-        addAttendees(res.data.id, attendees).then((res2)=> {
-          console.log('add attendees', res2)
-        })
+    const validationUrl = this.getValidationUrl();
+    try {
+      const qrUrl = await this.generateQRAddr(validationUrl);
+      const body = {
+        name: name,
+        description: description,
+        qrUrl: qrUrl,
+        validationUrl: validationUrl,
+        registerNow: true,
+      };
+      console.log("body", body);
 
-      })
-      .catch((error) => {
-        console.log("handleSubmit error", error);
-      });
+      createMeeting(body)
+        .then((res) => {
+          console.log("add meeting", res);
+          console.log(res.data.id, attendees);
+          addAttendees(res.data.id, attendees).then((res2) => {
+            console.log("add attendees", res2);
+          });
+          window.location.href = "/spaces/" + res.data.id;
+        })
+        .catch((error) => {
+          console.log("handleSubmit error", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  getValidationUrl = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    return apiUrl + "/" + Math.random().toString(36).slice(2, 20);
   };
 
   handleAttendeeAdd = (event) => {
-    const { attendeeId, attendeeName, attendeeEmail, attendeePhone } = this.state;
+    const { attendeeId, attendeeName, attendeeEmail, attendeePhone } =
+      this.state;
     if (attendeeName && attendeeEmail && attendeePhone) {
       const newAttendee = {
         id: attendeeId,
         name: attendeeName,
         email: attendeeEmail,
         phone: attendeePhone,
-      }
+      };
 
       // Add the new attendee to the attendees array
       this.setState((prevState) => ({
         attendees: [...prevState.attendees, newAttendee],
         attendeeId: attendeeId + 1,
-        attendeeName: '',
-        attendeeEmail: '', 
-        attendeePhone: '',
-      }))
+        attendeeName: "",
+        attendeeEmail: "",
+        attendeePhone: "",
+      }));
     }
-  }
+  };
 
   handleAttendeeChange = (e) => {
     this.setState({

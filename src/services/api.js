@@ -1,18 +1,22 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-export const createMeeting = (name, description) => {
-  return api.post('/meetings', { name, description });
+export const createMeeting = (data) => {
+  return api.post('/meetings', data);
 };
 
 export const findMeetings = () => {
     return api.get('/meetings');
+}
+
+export const findMeeting = (id) => {
+  return api.get('/meetings/' + id);
 }
 
 export const addAttendees = (meeting_id, data) => {

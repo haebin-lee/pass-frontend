@@ -1,8 +1,10 @@
 .centeredContent {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 30vh; 
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* height: 30vh; */
+    padding: 50px;
+    background-color: #F8F6F4;
 }
     

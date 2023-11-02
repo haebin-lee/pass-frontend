@@ -13,9 +13,11 @@ export default function Introduction() {
           The power to know. The ease of a click. Making attendance management a
           breeze.
         </p>
-        <button className="btn btn-outline-primary" onClick={handleRegister}>
-          Create Meeting Space
-        </button>
+        <div className="d-grid justify-content-md-start">
+          <button className="btn btn-outline-primary" onClick={handleRegister}>
+            Create Meeting Space
+          </button>
+        </div>
       </div>
     </>
   );

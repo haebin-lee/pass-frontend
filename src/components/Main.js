@@ -14,7 +14,7 @@ export default function Main() {
           <div className={styles.meetinglist}>
             <MeetingList />
           </div>
-        </div>
+      </div>
       </>
     );
 }
