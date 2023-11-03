@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Row, Col, Table } from "react-bootstrap";
 import { createMeeting, addAttendees } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
 import { qrGenerator } from "./QRCodeGenerator";
@@ -11,26 +10,23 @@ export default function CreateMeetingForm() {
   const [eventAt, setEventAt] = useState("");
   const [registerNow, setRegisterNow] = useState(false);
   const [attendees, setAttendees] = useState([]);
-  const [attendeeId, setAttendeeId] = useState(0);
-  const [attendeeName, setAttendeeName] = useState("");
-  const [attendeeEmail, setAttendeeEmail] = useState("");
-  const [attendeePhone, setAttendeePhone] = useState("");
   
   const location = useLocation();
-  const { editMeeting, editAttendees } = location.state;
-
+  const editMeeting = location.state != null ? location.state.editMeeting : null;
+  const editAttendees = location.state != null ? location.state.editAttendees : null;
+  
+  
   useEffect(() => {  
-    if (editMeeting) {
+    if (editMeeting != null) {
       setName(editMeeting.name);
       setDescription(editMeeting.description);
-      setEventAt(editMeeting.eventAt);
+      setEventAt(formatDate(editMeeting.eventAt));
       setRegisterNow(editMeeting.registerNow);
     }
     if (editAttendees) {
       setAttendees(editAttendees);
     }
-  }, [], []);
-
+  }, []);
 
   async function generateQRAddr(validationUrl) {
     try {
@@ -75,7 +71,6 @@ function handleChange(event) {
         registerNow: registerNow,
         eventAt: eventAt,
       };
-      console.log('body', body)
 
       createMeeting(body)
         .then((res) => {
@@ -99,26 +94,20 @@ function handleChange(event) {
     return apiUrl + "/" + Math.random().toString(36).slice(2, 20);
   }
 
-  const handleAttendeeAdd = () => {
-    if (attendeeName && attendeeEmail && attendeePhone) {
-      const newAttendee = {
-        id: attendeeId,
-        name: attendeeName,
-        email: attendeeEmail,
-        phone: attendeePhone,
-      };
-      setAttendees([...attendees, newAttendee]);
-      setAttendeeId(attendeeId + 1);
-      setAttendeeName("");
-      setAttendeeEmail("");
-      setAttendeePhone("");
-    }
+  const addAttendee = (newAttendee) => {
+    setAttendees([...attendees, newAttendee]);
   };
 
   function handleAttendeeChange(event) {
     this.setState({
       [event.target.name]: event.target.value,
     });
+  }
+
+  function formatDate(dateArray) {
+    const [year, month, day, hour, minute] = dateArray;
+    const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    return formattedDate;
   }
 
   return (
@@ -166,15 +155,31 @@ function handleChange(event) {
         </div>
         <div className="form-check form-switch">
           <label className="form-check-label">Register on the spot</label>
-          <input 
+          <input
             type="checkbox"
             name="registerNow"
             value={registerNow}
             onChange={handleChecked}
-            className="form-check-input" 
-            role="switch" 
-            id="formToggle"/>
+            className="form-check-input"
+            role="switch"
+            id="formToggle"
+          />
         </div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Participation</th>
+              <th scope="col">Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <Attendees attendees={attendees} addAttendee={addAttendee}/>
+          </tbody>
+        </table>
         <div className="d-grid justify-content-md-end">
           <button
             type="submit"
@@ -185,92 +190,11 @@ function handleChange(event) {
           </button>
         </div>
       </form>
-
-      {/* <Form>
-        <Form.Group className="mb-3" controlId="group_name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="name"
-            value={name}
-            onChange={this.handleChange}
-            placeholder="Enter your meet-up name"
-          />
-          <Form.Text className="text-muted" required>
-            Enter your meet-up name
-          </Form.Text>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            name="description"
-            value={description}
-            onChange={this.handleChange}
-            rows={3}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Attendee</Form.Label>
-          <Table striped>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>status</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <Attendees attendees={attendees} />
-            </tbody>
-          </Table>
-        </Form.Group>
-        <Form.Group>
-          <Row>
-            <Col>
-              <Form.Control
-                name="attendeeName"
-                placeholder="Name"
-                value={this.state.attendeeName}
-                onChange={this.handleAttendeeChange}
-              />
-            </Col>
-            <Col>
-              <Form.Control
-                name="attendeeEmail"
-                placeholder="Email"
-                value={this.state.attendeeEmail}
-                onChange={this.handleAttendeeChange}
-              />
-            </Col>
-            <Col>
-              <Form.Control
-                name="attendeePhone"
-                placeholder="phone"
-                value={this.state.attendeePhone}
-                onChange={this.handleAttendeeChange}
-              />
-            </Col>
-            <Col>
-              <Button variant="success" onClick={this.handleAttendeeAdd}>
-                Add
-              </Button>
-            </Col>
-          </Row>
-        </Form.Group>
-        <Button variant="primary" type="submit" onClick={this.handleSubmit}>
-          Save
-        </Button>
-      </Form> */}
     </div>
   );
 }
 
-function Attendees({ attendees }) {
+function Attendees({ attendees, addAttendee}) {
   return (
     <>
       {attendees.map((attendee) => (
@@ -280,15 +204,79 @@ function Attendees({ attendees }) {
           <td>{attendee.email}</td>
           <td>{attendee.phone}</td>
           <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-            <input type="checkbox" />
+            <input className="form-check-input" type="checkbox" />
           </td>
           <td>
-            <button variant="secondary" size="sm">
-              Edit
-            </button>
+            <button className="btn btn-outline-success btn-sm">Edit</button>
           </td>
         </tr>
       ))}
+      <AddAttendee addAttendee={addAttendee} />
+    </>
+  );
+}
+
+function AddAttendee({addAttendee}) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  
+  const handleAddClick = (event) => {
+    event.preventDefault()
+    const newAttendee = {
+      name: name,
+      email: email,
+      phone: phone,
+    };
+
+    addAttendee(newAttendee);
+
+    setName('');
+    setEmail('');
+    setPhone('');
+  };
+  return (
+    <>
+      <tr>
+        <td>N</td>
+        <td>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="name"
+            aria-label="Username"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="email"
+            aria-label="Username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="phone"
+            aria-label="Username"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </td>
+        <td></td>
+        <td>
+          <button 
+            className="btn btn-outline-success btn-sm"
+            onClick={handleAddClick}
+            >Add</button>
+        </td>
+      </tr>
     </>
   );
 }

@@ -66,6 +66,7 @@ export default function MeetingDetail() {
                     <th scope="col">name</th>
                     <th scope="col">email</th>
                     <th scope="col">phone</th>
+                    <th scope="col">Participation</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -89,6 +90,7 @@ function Attendees({ attendees }) {
           <td>{attendee.name}</td>
           <td>{attendee.email}</td>
           <td>{attendee.phone}</td>
+          <td></td>
         </tr>
       ))}
     </>
