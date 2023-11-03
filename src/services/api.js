@@ -11,6 +11,10 @@ export const createMeeting = (data) => {
   return api.post('/meetings', data);
 };
 
+export const updateMeeting = (id, data) => {
+  return api.put('/meetings/' + id, data)
+}
+
 export const findMeetings = () => {
     return api.get('/meetings');
 }

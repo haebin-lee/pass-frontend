@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createMeeting, addAttendees } from "../services/api";
+import { createMeeting, addAttendees, updateMeeting } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
 import { qrGenerator } from "./QRCodeGenerator";
 import {useLocation} from "react-router-dom";
@@ -10,11 +10,11 @@ export default function CreateMeetingForm() {
   const [eventAt, setEventAt] = useState("");
   const [registerNow, setRegisterNow] = useState(false);
   const [attendees, setAttendees] = useState([]);
+  const [idCounter, setIdCounter] = useState(0); 
   
   const location = useLocation();
   const editMeeting = location.state != null ? location.state.editMeeting : null;
   const editAttendees = location.state != null ? location.state.editAttendees : null;
-  
   
   useEffect(() => {  
     if (editMeeting != null) {
@@ -24,7 +24,13 @@ export default function CreateMeetingForm() {
       setRegisterNow(editMeeting.registerNow);
     }
     if (editAttendees) {
-      setAttendees(editAttendees);
+      let id = 0;
+      const attendeesWithId = editAttendees.map((attendee) => ({
+        ...attendee, 
+        id: ++id,
+      }))
+      setAttendees(attendeesWithId);
+      setIdCounter(id+1)
     }
   }, []);
 
@@ -58,7 +64,7 @@ function handleChange(event) {
     setRegisterNow(event.target.checked);
   }
 
-  async function handleSubmit(event) {
+  async function handleSave(event) {
     event.preventDefault();
     const validationUrl = getValidationUrl();
     try {
@@ -76,33 +82,54 @@ function handleChange(event) {
         .then((res) => {
           console.log("add meeting", res);
           console.log(res.data.id, attendees);
-          addAttendees(res.data.id, attendees).then((res2) => {
-            console.log("add attendees", res2);
-          });
           window.location.href = "/spaces/" + res.data.id;
         })
         .catch((error) => {
-          console.log("handleSubmit error", error);
+          console.log("handleSave error", error);
         });
     } catch (error) {
       console.log(error);
     }
   }
 
+  const handleEdit = (event) => {
+    const body = {
+      name: name,
+      description: description,
+      registerNow: registerNow,
+      eventAt: eventAt,
+      attendees: attendees
+    }
+    updateMeeting(editMeeting.id, body)
+      .then((res) => {
+        console.log('updateMeeting', res.data);
+      })
+      .catch((error) => {
+        console.log('handleEdit error', error)
+      })
+    
+  }
+
+
   function getValidationUrl() {
     const apiUrl = process.env.REACT_APP_API_URL;
     return apiUrl + "/" + Math.random().toString(36).slice(2, 20);
   }
 
-  const addAttendee = (newAttendee) => {
+  const addAttendee = (attendee) => {
+    const newAttendee = {
+      ...attendee, 
+      id: idCounter
+    }
     setAttendees([...attendees, newAttendee]);
+    setIdCounter(idCounter + 1);
   };
 
-  function handleAttendeeChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-  }
+  const editAttendee = (index, updatedData) => {
+    const updatedAttendees = [...attendees];
+    updatedAttendees[index] = {...updatedAttendees[index], ...updatedData};
+    setAttendees(updatedAttendees);
+  };
 
   function formatDate(dateArray) {
     const [year, month, day, hour, minute] = dateArray;
@@ -177,14 +204,14 @@ function handleChange(event) {
             </tr>
           </thead>
           <tbody>
-            <Attendees attendees={attendees} addAttendee={addAttendee}/>
+            <Attendees attendees={attendees} addAttendee={addAttendee} editAttendee={editAttendee}/>
           </tbody>
         </table>
         <div className="d-grid justify-content-md-end">
           <button
             type="submit"
             className="btn btn-primary"
-            onClick={handleSubmit}
+            onClick={handleSave}
           >
             Save
           </button>
@@ -194,24 +221,47 @@ function handleChange(event) {
   );
 }
 
-function Attendees({ attendees, addAttendee}) {
+function Attendees({ attendees, addAttendee, editAttendee}) {
+  const handleEditAttendee = (index, updatedData) => {
+    editAttendee(index, updatedData);
+  }
+
   return (
     <>
       {attendees.map((attendee) => (
         <tr key={attendee.id}>
           <td>{attendee.id}</td>
-          <td>{attendee.name}</td>
-          <td>{attendee.email}</td>
-          <td>{attendee.phone}</td>
+          <td>
+            <input
+              type="text"
+              className="form-control"
+              value={attendee.name}
+              onChange={(e) => handleEditAttendee(attendee.id, { name: e.target.value })}
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              className="form-control"
+              value={attendee.email}
+              onChange={(e) => handleEditAttendee(attendee.id, { email: e.target.value })}
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              className="form-control"
+              value={attendee.phone}
+              onChange={(e) => handleEditAttendee(attendee.id, { phone: e.target.value })}
+            />
+          </td>
           <td style={{ textAlign: "center", verticalAlign: "middle" }}>
             <input className="form-check-input" type="checkbox" />
           </td>
-          <td>
-            <button className="btn btn-outline-success btn-sm">Edit</button>
-          </td>
+          <td></td>
         </tr>
       ))}
-      <AddAttendee addAttendee={addAttendee} />
+      <AddAttendee addAttendee={addAttendee}/>
     </>
   );
 }
@@ -235,6 +285,7 @@ function AddAttendee({addAttendee}) {
     setEmail('');
     setPhone('');
   };
+
   return (
     <>
       <tr>
@@ -280,9 +331,3 @@ function AddAttendee({addAttendee}) {
     </>
   );
 }
-
-const attendeeData = [
-  { id: 1, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-  { id: 2, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-  { id: 3, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-];
