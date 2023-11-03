@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form, Row, Col, Table } from "react-bootstrap";
 import { createMeeting, addAttendees } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
 import { qrGenerator } from "./QRCodeGenerator";
+import {useLocation} from "react-router-dom";
 
 export default function CreateMeetingForm() {
   const [name, setName] = useState("");
@@ -14,6 +15,22 @@ export default function CreateMeetingForm() {
   const [attendeeName, setAttendeeName] = useState("");
   const [attendeeEmail, setAttendeeEmail] = useState("");
   const [attendeePhone, setAttendeePhone] = useState("");
+  
+  const location = useLocation();
+  const { editMeeting, editAttendees } = location.state;
+
+  useEffect(() => {  
+    if (editMeeting) {
+      setName(editMeeting.name);
+      setDescription(editMeeting.description);
+      setEventAt(editMeeting.eventAt);
+      setRegisterNow(editMeeting.registerNow);
+    }
+    if (editAttendees) {
+      setAttendees(editAttendees);
+    }
+  }, [], []);
+
 
   async function generateQRAddr(validationUrl) {
     try {
@@ -266,9 +283,9 @@ function Attendees({ attendees }) {
             <input type="checkbox" />
           </td>
           <td>
-            <Button variant="secondary" size="sm">
+            <button variant="secondary" size="sm">
               Edit
-            </Button>
+            </button>
           </td>
         </tr>
       ))}
