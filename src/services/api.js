@@ -26,3 +26,7 @@ export const findMeeting = (id) => {
 export const addAttendees = (meeting_id, data) => {
   return api.post('/meetings/' + Number(meeting_id) + '/attendees', data);
 }
+
+export const confirmAttendee = (key, data) => {
+  return api.post('meetings/' + key + '/attendees/confirm', data);
+}

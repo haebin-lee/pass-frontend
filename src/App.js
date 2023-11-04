@@ -28,7 +28,7 @@ const router = createBrowserRouter([
     element: <MeetingDetail />
   },
   {
-    path:'/validation/:qrAddr',
+    path:'/validation/:key',
     element: <Validation />
   }
 ]);
