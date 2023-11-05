@@ -66,14 +66,14 @@ function handleChange(event) {
 
   async function handleSave(event) {
     event.preventDefault();
-    const validationUrl = getValidationUrl();
+    const key = Math.random().toString(36).slice(2, 20);
     try {
-      const qrUrl = await generateQRAddr(validationUrl);
+      const qrUrl = await generateQRAddr(key);
       const body = {
         name: name,
         description: description,
         qrUrl: qrUrl,
-        validationUrl: validationUrl,
+        key: key,
         registerNow: registerNow,
         eventAt: eventAt,
       };
@@ -108,12 +108,6 @@ function handleChange(event) {
         console.log('handleEdit error', error)
       })
     
-  }
-
-
-  function getValidationUrl() {
-    const apiUrl = process.env.REACT_APP_API_URL;
-    return apiUrl + "/" + Math.random().toString(36).slice(2, 20);
   }
 
   const addAttendee = (attendee) => {

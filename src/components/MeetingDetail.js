@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
+import { renderToString } from 'react-dom/server';
 import styles from '../assets/css/MeetingDetail.module.css';
 import {findMeeting} from '../services/api';
+import QRCode from './QRCode';
 
 export default function MeetingDetail() {
     const {id} = useParams();
     const [meeting, setMeeting] = useState({});
     const [attendees, setAttendees] = useState([]);
-    const [showQRCode, setShowQRCode] = useState(false);
 
     useEffect(() => {
         findMeeting(id).then((response) => {
@@ -26,6 +27,27 @@ export default function MeetingDetail() {
         editAttendees: attendees,
       };
       navigate('/create-space', {state});
+    }
+
+    const onClickQR = () => {     
+      console.log('qrUrl', meeting.qrUrl)
+      const newTab = window.open('', '_blank');
+      const qrCodeHTML = renderToString(<QRCode qrUrl={meeting.qrUrl} />);
+      newTab.document.write(qrCodeHTML);
+    };
+
+    function formatDateTime(inputDateTime) {
+      if (inputDateTime == null) return null; 
+      
+      const year = inputDateTime[0];
+      const month = inputDateTime[1].toString().padStart(2, "0");
+      const day = inputDateTime[2].toString().padStart(2, "0");
+      const hours = inputDateTime[3].toString().padStart(2, "0");
+      const minutes = inputDateTime[4].toString().padStart(2, "0");
+      const period = inputDateTime[3] >= 12 ? "PM" : "AM";
+
+      const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}${period}`;
+      return formattedDateTime;
     }
 
     return (
@@ -48,12 +70,13 @@ export default function MeetingDetail() {
                 <button
                   className="btn btn-outline-success btn-sm"
                   style={{ margin: "2px" }}
+                  onClick={onClickQR}
                 >
                   QR
                 </button>
               </div>
               <h4>Event Date</h4>
-              <p>{meeting.eventAt}</p>
+              <p>{formatDateTime(meeting.eventAt)}</p>
               <h4 className={styles.description}>Description</h4>
               <p>{meeting.description}</p>
             </div>
