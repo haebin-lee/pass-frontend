@@ -23,6 +23,10 @@ export const findMeeting = (id) => {
   return api.get('/meetings/' + id);
 }
 
+export const findMeetingByKey = (key) => {
+  return api.get('/meetings?key=' + key);
+}
+
 export const addAttendees = (meeting_id, data) => {
   return api.post('/meetings/' + Number(meeting_id) + '/attendees', data);
 }

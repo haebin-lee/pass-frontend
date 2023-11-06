@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createMeeting, addAttendees, updateMeeting } from "../services/api";
+import { createMeeting, updateMeeting } from "../services/api";
 import styles from "../assets/css/CreateSpaceForm.module.css";
 import { qrGenerator } from "./QRCodeGenerator";
 import {useLocation} from "react-router-dom";
@@ -9,6 +9,7 @@ export default function CreateMeetingForm() {
   const [description, setDescription] = useState("");
   const [eventAt, setEventAt] = useState("");
   const [registerNow, setRegisterNow] = useState(false);
+  const [verificationMethod, setVerificationMethod] = useState('NAME');
   const [attendees, setAttendees] = useState([]);
   const [idCounter, setIdCounter] = useState(0); 
   
@@ -60,12 +61,23 @@ function handleChange(event) {
         break;
     }
   }
+
+  const  handleOptionRadio = (verificationMethod) => {
+      setVerificationMethod(verificationMethod);
+  }
+
   function handleChecked(event) {
     setRegisterNow(event.target.checked);
   }
 
   async function handleSave(event) {
     event.preventDefault();
+
+    if (!name || !description || !eventAt) {
+      alert("Name, description, and event date are required.");
+      return;
+    }
+
     const key = Math.random().toString(36).slice(2, 20);
     const verificationUrl = "http://localhost:3000/validation/" + key;
     try {
@@ -76,18 +88,14 @@ function handleChange(event) {
         qrUrl: qrUrl,
         key: key,
         registerNow: registerNow,
+        verificationMethod: verificationMethod,
         eventAt: eventAt,
+        attendees: attendees,
       };
 
       createMeeting(body)
         .then((res) => {
-          addAttendees(res.data.id, attendees)
-            .then((res2) => {
-              window.location.href = "/spaces/" + res.data.id;
-            })
-            .catch((error) => {
-              console.log('handleSave:: addAttendees error', error);
-            })
+            window.location.href = "/spaces/" + res.data.id;
         })
         .catch((error) => {
           console.log("handleSave error", error);
@@ -131,6 +139,7 @@ function handleChange(event) {
   };
 
   function formatDate(dateArray) {
+    if (!dateArray) return null;
     const [year, month, day, hour, minute] = dateArray;
     const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     return formattedDate;
@@ -179,7 +188,53 @@ function handleChange(event) {
             id="formDate"
           />
         </div>
-        <div className="form-check form-switch">
+        <div className="mb-3">
+          <label htmlFor="exampleOption" className="form-label">
+            Select one: name, email, phone to confirm attendee verification.
+          </label>
+          <br />
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic radio toggle button group"
+          >
+            <input
+              type="radio"
+              className="btn-check"
+              name="btnradio"
+              id="btnradio1"
+              autoComplete="off"
+              defaultChecked="checked"
+              onClick={() => handleOptionRadio('NAME')}
+            />
+            <label className="btn btn-outline-primary" htmlFor="btnradio1">
+              Name
+            </label>
+            <input
+              type="radio"
+              className="btn-check"
+              name="btnradio"
+              id="btnradio2"
+              autoComplete="off"
+              onClick={() => handleOptionRadio('EMAIL')}
+            />
+            <label className="btn btn-outline-primary" htmlFor="btnradio2">
+              Email
+            </label>
+            <input
+              type="radio"
+              className="btn-check"
+              name="btnradio"
+              id="btnradio3"
+              autoComplete="off"
+              onClick={() => handleOptionRadio('PHONE')}
+            />
+            <label className="btn btn-outline-primary" htmlFor="btnradio3">
+              Phone
+            </label>
+          </div>
+        </div>
+        {/* <div className="form-check form-switch">
           <label className="form-check-label">Register on the spot</label>
           <input
             type="checkbox"
@@ -190,8 +245,8 @@ function handleChange(event) {
             role="switch"
             id="formToggle"
           />
-        </div>
-        <table class="table table-hover">
+        </div> */}
+        <table className="table table-hover">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -203,7 +258,11 @@ function handleChange(event) {
             </tr>
           </thead>
           <tbody>
-            <Attendees attendees={attendees} addAttendee={addAttendee} editAttendee={editAttendee}/>
+            <Attendees
+              attendees={attendees}
+              addAttendee={addAttendee}
+              editAttendee={editAttendee}
+            />
           </tbody>
         </table>
         <div className="d-grid justify-content-md-end">

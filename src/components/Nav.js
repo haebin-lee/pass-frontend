@@ -4,7 +4,6 @@ export default function Nav() {
   function onClickLogin() {
 
   }
-  
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">

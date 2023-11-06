@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Import Link from React Router
+import { Link } from "react-router-dom";
 import { findMeetings } from "../services/api";
 import styles from "../assets/css/MeetingList.module.css";
 

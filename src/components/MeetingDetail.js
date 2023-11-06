@@ -76,10 +76,16 @@ export default function MeetingDetail() {
               <p>{formatDateTime(meeting.eventAt)}</p>
               <h4 className={styles.description}>Description</h4>
               <p>{meeting.description}</p>
+              <h4>Verification</h4>
+              <>{
+                meeting.verificationMethod === 'NAME' ? 'name': 
+                meeting.verificationMethod === 'EMAIL' ? 'email': 
+                meeting.verificationMethod === 'EMAIL' ? 'phone': 'name' 
+              }</>
             </div>
             <div className={styles.etc}></div>
             <div className={styles.host}>
-              <table class="table table-hover">
+              <table className="table table-hover">
                 <thead>
                   <tr>
                     <th scope="col">#</th>

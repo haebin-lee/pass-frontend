@@ -5,7 +5,6 @@ import MeetingList from "./components/MeetingList";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Nav from "./components/Nav";
 import Main from "./components/Main";
-import styles from "./assets/css/App.module.css";
 import MeetingDetail from "./components/MeetingDetail";
 import Validation from "./components/Validation";
 

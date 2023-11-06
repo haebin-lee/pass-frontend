@@ -1,15 +1,37 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styles from "../assets/css/Validation.module.css";
-import { confirmAttendee } from '../services/api';
+import { confirmAttendee, findMeetingByKey } from '../services/api';
 
 export default function Validation() {
-    const [name, setName] = useState('');
+    const [value, setValue] = useState('');
+    const [verificationMethod, setVerificationMethod] = useState('NAME');
     const [confirm, setConfirm] = useState(null);
-
     const {key} = useParams();
+
+    useEffect(() => {
+      findMeetingByKey(key).then((response) => {
+        const size = response.data == null ? 0 : response.data.length;
+        if (size > 0) {
+          setVerificationMethod(response.data[0].verificationMethod);
+        }
+      })
+    }, [])
+
     const onClickConfirm = (event) => {
-      const data = {name};
+      let data = {
+        name: value
+      }
+      if (verificationMethod === "EMAIL") {
+        data = {
+          email: value,
+        };
+      } else if (verificationMethod === "PHONE") {
+        data = {
+          phone: value, 
+        }
+      }
+      
       confirmAttendee(key, data)
         .then((res) => {
           const result = res.data;
@@ -20,19 +42,27 @@ export default function Validation() {
     const handleChange = (event) => {
       event.preventDefault();
       const {value} = event.target; 
-      setName(value);
+      setValue(value);
+    }
+
+    const placeholder = () => {
+      let text = `Attendee's name`
+      if (verificationMethod !== null) {
+        text = `Attendee's ${verificationMethod.toLowerCase()}`
+      }
+      return text;
     }
 
     return (
       <>
         <div className={styles.container}>
-          {confirm == null && (
+          {confirm === null && (
             <div className="input-group mb-3">
               <div className={styles.child} style={{ width: "100%" }}>
                 <input
-                  type="name"
+                  type="info"
                   className="form-control"
-                  placeholder="Attendee's name"
+                  placeholder={placeholder()}
                   aria-label="name"
                   aria-describedby="basic-addon2"
                   onChange={handleChange}
@@ -48,8 +78,8 @@ export default function Validation() {
               </div>
             </div>
           )}
-          {confirm == true && <p>You're invited.</p>}
-          {confirm == false && <p>Sorry, you are not invited.</p>}
+          {confirm === true && <p>You're invited.</p>}
+          {confirm === false && <p>Sorry, you are not invited.</p>}
         </div>
       </>
     );

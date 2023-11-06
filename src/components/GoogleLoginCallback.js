@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocation, useHistory } from 'react-router-dom'; // Assuming you're using React Router
+import { useLocation, useHistory } from 'react-router-dom';
 import { googleLogin } from '../services/api'
 
 export default function GoogleLoginCallback() {
