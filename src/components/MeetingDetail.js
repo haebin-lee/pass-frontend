@@ -12,9 +12,8 @@ export default function MeetingDetail() {
 
     useEffect(() => {
         findMeeting(id).then((response) => {
-            console.log(response.data)
             setMeeting(response.data)
-            setAttendees(attendeeData);
+            setAttendees(response.data.attendees);
         }).catch((error) => { 
             console.error('Error fetching meeting', error);
         })
@@ -55,7 +54,6 @@ export default function MeetingDetail() {
         <div className={styles.container}>
           <div className={styles.title}>
             <h2 className={styles.centeredContent}>{meeting.name}</h2>
-            <b>Hosted by</b>
           </div>
           <div className={styles.detail_container}>
             <div className={styles.detail}>
@@ -113,15 +111,20 @@ function Attendees({ attendees }) {
           <td>{attendee.name}</td>
           <td>{attendee.email}</td>
           <td>{attendee.phone}</td>
-          <td></td>
+          <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={`inlineCheckbox${attendee.id}`}
+                value="option3"
+                checked={attendee.status === 'ATTNEDED'}
+                disabled
+              />
+            </div>
+          </td>
         </tr>
       ))}
     </>
   );
 }
-
-const attendeeData = [
-  { id: 1, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-  { id: 2, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-  { id: 3, name: "Lucy", email: "hblee8080@gmail.com", phone: "6267863192" },
-];

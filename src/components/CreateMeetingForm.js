@@ -27,10 +27,10 @@ export default function CreateMeetingForm() {
       let id = 0;
       const attendeesWithId = editAttendees.map((attendee) => ({
         ...attendee, 
-        id: ++id,
+        id: id++,
       }))
       setAttendees(attendeesWithId);
-      setIdCounter(id+1)
+      setIdCounter(id)
     }
   }, []);
 
@@ -67,8 +67,9 @@ function handleChange(event) {
   async function handleSave(event) {
     event.preventDefault();
     const key = Math.random().toString(36).slice(2, 20);
+    const verificationUrl = "http://localhost:3000/validation/" + key;
     try {
-      const qrUrl = await generateQRAddr(key);
+      const qrUrl = await generateQRAddr(verificationUrl);
       const body = {
         name: name,
         description: description,
@@ -80,9 +81,13 @@ function handleChange(event) {
 
       createMeeting(body)
         .then((res) => {
-          console.log("add meeting", res);
-          console.log(res.data.id, attendees);
-          window.location.href = "/spaces/" + res.data.id;
+          addAttendees(res.data.id, attendees)
+            .then((res2) => {
+              window.location.href = "/spaces/" + res.data.id;
+            })
+            .catch((error) => {
+              console.log('handleSave:: addAttendees error', error);
+            })
         })
         .catch((error) => {
           console.log("handleSave error", error);
@@ -230,7 +235,9 @@ function Attendees({ attendees, addAttendee, editAttendee}) {
               type="text"
               className="form-control"
               value={attendee.name}
-              onChange={(e) => handleEditAttendee(attendee.id, { name: e.target.value })}
+              onChange={(e) =>
+                handleEditAttendee(attendee.id, { name: e.target.value })
+              }
             />
           </td>
           <td>
@@ -238,7 +245,9 @@ function Attendees({ attendees, addAttendee, editAttendee}) {
               type="text"
               className="form-control"
               value={attendee.email}
-              onChange={(e) => handleEditAttendee(attendee.id, { email: e.target.value })}
+              onChange={(e) =>
+                handleEditAttendee(attendee.id, { email: e.target.value })
+              }
             />
           </td>
           <td>
@@ -246,16 +255,25 @@ function Attendees({ attendees, addAttendee, editAttendee}) {
               type="text"
               className="form-control"
               value={attendee.phone}
-              onChange={(e) => handleEditAttendee(attendee.id, { phone: e.target.value })}
+              onChange={(e) =>
+                handleEditAttendee(attendee.id, { phone: e.target.value })
+              }
             />
           </td>
           <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-            <input className="form-check-input" type="checkbox" />
+            <input 
+              className="form-check-input" 
+              type="checkbox" 
+              checked={attendee.status === 'ATTENDED'}
+              onChange={() => handleEditAttendee(attendee.id, {
+                status: attendee.status === 'ATTENDED' ? 'NOT_ATTENDED' : 'ATTENDED'
+              })}
+            />
           </td>
           <td></td>
         </tr>
       ))}
-      <AddAttendee addAttendee={addAttendee}/>
+      <AddAttendee addAttendee={addAttendee} />
     </>
   );
 }
