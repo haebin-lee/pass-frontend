@@ -3,9 +3,9 @@ import styles from "../assets/css/Introduction.module.css";
 
 export default function Introduction() {
   function handleRegister() {
-    console.log("Click Registration");
     window.location.href = '/create-space'
   }
+  
   return (
     <>
       <div className={styles.centeredContent}>

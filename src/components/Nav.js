@@ -1,11 +1,8 @@
 import React from "react";
 
 export default function Nav() {
-  function onClickSearch() {
-    console.log("click search");
-  }
   function onClickLogin() {
-    console.log("click login");
+
   }
   
   return (

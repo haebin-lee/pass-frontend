@@ -18,7 +18,7 @@
   grid-template-areas:
     "detail etc"
     "host .";
-  padding: 50px; /* Add padding to all sides */
+  padding: 50px;
 }
 
 .detail { grid-area: detail; }

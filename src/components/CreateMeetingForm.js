@@ -39,7 +39,7 @@ export default function CreateMeetingForm() {
       const qrDataURL = await qrGenerator(validationUrl);
       return qrDataURL;
     } catch (error) {
-      console.error(error);
+        console.error(error);
       throw error;
     }
   }

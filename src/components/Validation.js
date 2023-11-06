@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styles from "../assets/css/Validation.module.css";
 import { confirmAttendee } from '../services/api';
-import { ThemeConsumer } from 'react-bootstrap/esm/ThemeProvider';
-
 
 export default function Validation() {
     const [name, setName] = useState('');

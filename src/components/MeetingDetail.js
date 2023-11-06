@@ -29,7 +29,6 @@ export default function MeetingDetail() {
     }
 
     const onClickQR = () => {     
-      console.log('qrUrl', meeting.qrUrl)
       const newTab = window.open('', '_blank');
       const qrCodeHTML = renderToString(<QRCode qrUrl={meeting.qrUrl} />);
       newTab.document.write(qrCodeHTML);
@@ -118,7 +117,7 @@ function Attendees({ attendees }) {
                 type="checkbox"
                 id={`inlineCheckbox${attendee.id}`}
                 value="option3"
-                checked={attendee.status === 'ATTNEDED'}
+                checked={attendee.status === 'ATTENDED'}
                 disabled
               />
             </div>
