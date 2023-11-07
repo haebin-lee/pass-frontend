@@ -48,7 +48,7 @@ function Meeting({ meetings, ellipsis}) {
       <h2 style={{ padding: "3px" }}>Upcoming Events</h2>
       <div className="row row-cols-4 g-5">
         {meetings.map((meeting) => (
-          <div className="col">
+          <div className="col" key={meeting.id}>
             <Link to={`/spaces/${meeting.id}`}>
               {/* Use Link to navigate to MeetingDetail */}
               <div className="card" style={{ width: "300px", height: "300px" }}>

@@ -7,7 +7,7 @@ import QRCode from './QRCode';
 
 export default function MeetingDetail() {
     const {id} = useParams();
-    const [meeting, setMeeting] = useState({});
+    const [meeting, setMeeting] = useState([]);
     const [attendees, setAttendees] = useState([]);
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export default function MeetingDetail() {
         }).catch((error) => { 
             console.error('Error fetching meeting', error);
         })
-    },{});
+    },[]);
     const navigate = useNavigate();
 
     function onClickEdit() {
@@ -80,7 +80,7 @@ export default function MeetingDetail() {
               <>{
                 meeting.verificationMethod === 'NAME' ? 'name': 
                 meeting.verificationMethod === 'EMAIL' ? 'email': 
-                meeting.verificationMethod === 'EMAIL' ? 'phone': 'name' 
+                meeting.verificationMethod === 'PHONE' ? 'phone': 'name' 
               }</>
             </div>
             <div className={styles.etc}></div>

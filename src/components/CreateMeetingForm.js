@@ -6,6 +6,7 @@ import {useLocation} from "react-router-dom";
 
 export default function CreateMeetingForm() {
   const [name, setName] = useState("");
+  const [isEditingMode, setIsEditingMode] = useState(false);
   const [description, setDescription] = useState("");
   const [eventAt, setEventAt] = useState("");
   const [registerNow, setRegisterNow] = useState(false);
@@ -23,6 +24,8 @@ export default function CreateMeetingForm() {
       setDescription(editMeeting.description);
       setEventAt(formatDate(editMeeting.eventAt));
       setRegisterNow(editMeeting.registerNow);
+      setVerificationMethod(editMeeting.verificationMethod);
+      setIsEditingMode(true);
     }
     if (editAttendees) {
       let id = 0;
@@ -79,7 +82,8 @@ function handleChange(event) {
     }
 
     const key = Math.random().toString(36).slice(2, 20);
-    const verificationUrl = "http://localhost:3000/validation/" + key;
+    const currentDomain = window.location.origin;
+    const verificationUrl = currentDomain + "/validation/" + key;
     try {
       const qrUrl = await generateQRAddr(verificationUrl);
       const body = {
@@ -106,16 +110,19 @@ function handleChange(event) {
   }
 
   const handleEdit = (event) => {
+    event.preventDefault();
+
     const body = {
       name: name,
       description: description,
       registerNow: registerNow,
+      verificationMethod: verificationMethod,
       eventAt: eventAt,
       attendees: attendees
     }
     updateMeeting(editMeeting.id, body)
       .then((res) => {
-        console.log('updateMeeting', res.data);
+        window.location.href = "/spaces/" + editMeeting.id
       })
       .catch((error) => {
         console.log('handleEdit error', error)
@@ -204,7 +211,7 @@ function handleChange(event) {
               name="btnradio"
               id="btnradio1"
               autoComplete="off"
-              defaultChecked="checked"
+              checked={verificationMethod === 'NAME'}
               onClick={() => handleOptionRadio('NAME')}
             />
             <label className="btn btn-outline-primary" htmlFor="btnradio1">
@@ -216,6 +223,7 @@ function handleChange(event) {
               name="btnradio"
               id="btnradio2"
               autoComplete="off"
+              checked={verificationMethod === 'EMAIL'}
               onClick={() => handleOptionRadio('EMAIL')}
             />
             <label className="btn btn-outline-primary" htmlFor="btnradio2">
@@ -227,6 +235,7 @@ function handleChange(event) {
               name="btnradio"
               id="btnradio3"
               autoComplete="off"
+              checked={verificationMethod === 'PHONE'}
               onClick={() => handleOptionRadio('PHONE')}
             />
             <label className="btn btn-outline-primary" htmlFor="btnradio3">
@@ -266,13 +275,22 @@ function handleChange(event) {
           </tbody>
         </table>
         <div className="d-grid justify-content-md-end">
+          {isEditingMode ? (
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={handleEdit}>
+                Edit
+              </button>
+          ) :(
           <button
             type="submit"
             className="btn btn-primary"
-            onClick={handleSave}
-          >
-            Save
-          </button>
+            onClick={handleSave}>
+              Save
+            </button>
+          )}
+          
         </div>
       </form>
     </div>
